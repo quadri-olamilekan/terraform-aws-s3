@@ -189,9 +189,25 @@ resource "aws_kms_key" "mykey" {
   enable_key_rotation     = true
 }
 
+resource "aws_kms_key" "mykey_source" {
+    provider = aws.west
+  description             = "This key is used to encrypt bucket objects"
+  deletion_window_in_days = 10
+  enable_key_rotation     = true
+}
+
 #  "Ensure KMS key Policy is defined"
 resource "aws_kms_key_policy" "mykey" {
   key_id = aws_kms_key.mykey.id
+  policy = data.aws_iam_policy_document.kms_key_policy.json
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_kms_key_policy" "mykey_source" {
+    provider = aws.west
+  key_id = aws_kms_key.mykey_source.id
   policy = data.aws_iam_policy_document.kms_key_policy.json
   lifecycle {
     create_before_destroy = true
@@ -218,7 +234,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.mykey.arn
+      kms_master_key_id = aws_kms_key.mykey_source.arn
       sse_algorithm     = "aws:kms"
     }
   }
@@ -227,11 +243,13 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 # Ensure S3 buckets should have event notifications enabled
 resource "aws_sqs_queue" "queue" {
   name   = "s3-event-notification-queue"
+  kms_master_key_id = aws_kms_key.mykey.arn
   policy = data.aws_iam_policy_document.queue.json
 }
 
 resource "aws_sqs_queue" "queue_source" {
   provider = aws.west
+  kms_master_key_id = aws_kms_key.mykey_source.arn
   name     = "s3-event-notification-queue"
   policy   = data.aws_iam_policy_document.queue.json
 }
