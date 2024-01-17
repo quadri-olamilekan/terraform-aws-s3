@@ -86,7 +86,7 @@ resource "aws_s3_bucket_versioning" "source" {
 resource "aws_s3_bucket_replication_configuration" "replication" {
   count    = var.create_vpc ? 1 : 0
   provider = aws.source
- 
+
   depends_on = [aws_s3_bucket_versioning.source]
 
   role   = aws_iam_role.replication.arn
@@ -102,9 +102,9 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
     status = var.rep_rule_status
 
     source_selection_criteria {
-          replica_modifications {
-    status = var.replica_modifications_status
-  }
+      replica_modifications {
+        status = var.replica_modifications_status
+      }
       sse_kms_encrypted_objects {
         status = var.sse_kms_encrypted_objects_status
       }
@@ -225,7 +225,7 @@ resource "aws_kms_key_policy" "mykey" {
   key_id = aws_kms_key.mykey.id
   policy = data.aws_iam_policy_document.kms_key_policy.json
   lifecycle {
-    create_before_destroy = var.lifecycle
+    create_before_destroy = true
   }
 }
 
@@ -240,7 +240,7 @@ resource "aws_kms_key_policy" "mykey_source" {
   key_id   = aws_kms_key.mykey_source.id
   policy   = data.aws_iam_policy_document.kms_key_policy.json
   lifecycle {
-    create_before_destroy = var.lifecycle
+    create_before_destroy = true
   }
 }
 
@@ -278,7 +278,7 @@ resource "aws_sqs_queue" "queue" {
 
 resource "aws_sqs_queue" "queue_source" {
   provider          = aws.source
-    name              = var.sqs_s
+  name              = var.sqs_s
   kms_master_key_id = aws_kms_key.mykey_source.arn
   policy            = data.aws_iam_policy_document.queue.json
 }
@@ -288,8 +288,8 @@ resource "aws_s3_bucket_notification" "backend" {
   bucket = aws_s3_bucket.backend[count.index].id
 
   queue {
-    queue_arn = aws_sqs_queue.queue.arn
-    events = var.event_b
+    queue_arn     = aws_sqs_queue.queue.arn
+    events        = var.event_b
     filter_suffix = var.not_suffix_b
   }
 }
@@ -300,8 +300,8 @@ resource "aws_s3_bucket_notification" "source" {
   bucket   = aws_s3_bucket.source[count.index].id
 
   queue {
-    queue_arn = aws_sqs_queue.queue_source.arn
-    events = var.event_s
+    queue_arn     = aws_sqs_queue.queue_source.arn
+    events        = var.event_s
     filter_suffix = var.not_suffix_s
   }
 }
