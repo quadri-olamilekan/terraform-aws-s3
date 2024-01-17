@@ -217,6 +217,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 resource "aws_sqs_queue" "queue" {
   name              = "s3-event-notification-queue"
   kms_master_key_id = aws_kms_key.mykey.arn
+  kms_data_key_reuse_period_seconds = 300
   policy            = data.aws_iam_policy_document.queue.json
 }
 
@@ -224,6 +225,7 @@ resource "aws_sqs_queue" "queue_source" {
   provider          = aws.west
   name              = "s3-event-notification-queue"
   kms_master_key_id = aws_kms_key.mykey.arn
+  kms_data_key_reuse_period_seconds = 300
   policy            = data.aws_iam_policy_document.queue.json
 }
 
