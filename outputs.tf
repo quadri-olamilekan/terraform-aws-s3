@@ -9,3 +9,7 @@ output "source-name" {
 output "sqs_queue_url" {
   value = aws_sqs_queue.queue.id
 }
+
+output "sqs_queue_source_url" {
+  value = aws_sqs_queue.queue_source.id
+}

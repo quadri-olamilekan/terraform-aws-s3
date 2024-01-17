@@ -35,7 +35,8 @@ resource "aws_s3_bucket" "backend" {
 }
 
 resource "aws_s3_bucket_versioning" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
   versioning_configuration {
     status = var.versioning
   }
@@ -54,21 +55,23 @@ resource "aws_s3_bucket" "source" {
 
 
 resource "aws_s3_bucket_versioning" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
 
-  bucket = aws_s3_bucket.source[0].id
+  bucket = aws_s3_bucket.source[count.index].id
   versioning_configuration {
     status = "Enabled"
   }
 }
 
 resource "aws_s3_bucket_replication_configuration" "replication" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
   # Must have bucket versioning enabled first
   depends_on = [aws_s3_bucket_versioning.source]
 
   role   = aws_iam_role.replication.arn
-  bucket = aws_s3_bucket.source[0].id
+  bucket = aws_s3_bucket.source[count.index].id
 
   rule {
     id = "foobar"
@@ -80,7 +83,7 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
     status = "Enabled"
 
     destination {
-      bucket        = aws_s3_bucket.backend[0].arn
+      bucket        = aws_s3_bucket.backend[count.index].arn
       storage_class = "STANDARD"
     }
 
@@ -92,7 +95,8 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
 
 # Ensure that an S3 bucket has a lifecycle configuration
 resource "aws_s3_bucket_lifecycle_configuration" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
   rule {
     id     = "backend-rule"
     status = "Enabled"
@@ -110,8 +114,9 @@ resource "aws_s3_bucket_lifecycle_configuration" "backend" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
-  bucket   = aws_s3_bucket.source[0].id
+  bucket   = aws_s3_bucket.source[count.index].id
   rule {
     id     = "backend-rule"
     status = "Enabled"
@@ -130,7 +135,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "source" {
 
 # Ensure that S3 bucket has a Public Access block
 resource "aws_s3_bucket_public_access_block" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -139,8 +145,9 @@ resource "aws_s3_bucket_public_access_block" "backend" {
 }
 
 resource "aws_s3_bucket_public_access_block" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
-  bucket   = aws_s3_bucket.source[0].id
+  bucket   = aws_s3_bucket.source[count.index].id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -149,17 +156,19 @@ resource "aws_s3_bucket_public_access_block" "source" {
 }
 
 resource "aws_s3_bucket_logging" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
 
-  target_bucket = aws_s3_bucket.backend[0].id
+  target_bucket = aws_s3_bucket.backend[count.index].id
   target_prefix = "log/"
 }
 
 resource "aws_s3_bucket_logging" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
-  bucket   = aws_s3_bucket.source[0].id
+  bucket   = aws_s3_bucket.source[count.index].id
 
-  target_bucket = aws_s3_bucket.source[0].id
+  target_bucket = aws_s3_bucket.source[count.index].id
   target_prefix = "log/"
 }
 
@@ -191,7 +200,8 @@ resource "aws_kms_key_policy" "mykey" {
 
 #6. Bucket encryption
 resource "aws_s3_bucket_server_side_encryption_configuration" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -202,8 +212,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backend" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
-  bucket   = aws_s3_bucket.source[0].id
+  bucket   = aws_s3_bucket.source[count.index].id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -215,37 +226,45 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 
 # Ensure S3 buckets should have event notifications enabled
 resource "aws_sqs_queue" "queue" {
-  name              = "s3-event-notification-queue"
-  kms_master_key_id = aws_kms_key.mykey.arn
-  kms_data_key_reuse_period_seconds = 300
-  policy            = data.aws_iam_policy_document.queue.json
+  name   = "s3-event-notification-queue"
+  policy = data.aws_iam_policy_document.queue.json
 }
 
 resource "aws_sqs_queue" "queue_source" {
-  provider          = aws.west
-  name              = "s3-event-notification-queue"
-  kms_master_key_id = aws_kms_key.mykey.arn
-  kms_data_key_reuse_period_seconds = 300
-  policy            = data.aws_iam_policy_document.queue.json
+  provider = aws.west
+  name     = "s3-event-notification-queue"
+  policy   = data.aws_iam_policy_document.queue.json
 }
 
 resource "aws_s3_bucket_notification" "backend" {
-  bucket = aws_s3_bucket.backend[0].id
+  count  = var.create_vpc ? 1 : 0
+  bucket = aws_s3_bucket.backend[count.index].id
 
   queue {
-    queue_arn     = aws_sqs_queue.queue.arn
-    events        = ["s3:ObjectCreated:*"]
+    queue_arn = aws_sqs_queue.queue.arn
+    events = ["s3:ObjectCreated:*",
+      "s3:LifecycleTransition",
+      "s3:LifecycleExpiration:*",
+      "s3:ObjectRemoved:*",
+      "s3:ObjectRestore:*",
+    "s3:Replication:*"]
     filter_suffix = ".log"
   }
 }
 
 resource "aws_s3_bucket_notification" "source" {
+  count    = var.create_vpc ? 1 : 0
   provider = aws.west
-  bucket   = aws_s3_bucket.source[0].id
+  bucket   = aws_s3_bucket.source[count.index].id
 
   queue {
-    queue_arn     = aws_sqs_queue.queue_source.arn
-    events        = ["s3:ObjectCreated:*"]
+    queue_arn = aws_sqs_queue.queue_source.arn
+    events = ["s3:ObjectCreated:*",
+      "s3:LifecycleTransition",
+      "s3:LifecycleExpiration:*",
+      "s3:ObjectRemoved:*",
+      "s3:ObjectRestore:*",
+    "s3:Replication:*"]
     filter_suffix = ".log"
   }
 }

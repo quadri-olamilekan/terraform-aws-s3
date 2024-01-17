@@ -92,6 +92,7 @@ data "aws_iam_policy_document" "kms_key_policy" {
 }
 
 data "aws_iam_policy_document" "queue" {
+
   statement {
     effect = "Allow"
 
