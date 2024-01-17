@@ -50,9 +50,9 @@ data "aws_iam_policy_document" "replication" {
 
 data "aws_iam_policy_document" "kms_key_policy" {
   statement {
-    sid       = "Allow administration of the key"
-    effect    = "Allow"
-    actions   = [
+    sid    = "Allow administration of the key"
+    effect = "Allow"
+    actions = [
       "kms:Create*",
       "kms:Describe*",
       "kms:Enable*",
@@ -74,9 +74,9 @@ data "aws_iam_policy_document" "kms_key_policy" {
   }
 
   statement {
-    sid       = "Allow use of the key"
-    effect    = "Allow"
-    actions   = [
+    sid    = "Allow use of the key"
+    effect = "Allow"
+    actions = [
       "kms:Encrypt",
       "kms:Decrypt",
       "kms:ReEncrypt*",

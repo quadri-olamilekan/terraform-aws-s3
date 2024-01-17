@@ -92,7 +92,7 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
 
 # Ensure that an S3 bucket has a lifecycle configuration
 resource "aws_s3_bucket_lifecycle_configuration" "backend" {
-    bucket = aws_s3_bucket.backend[0].id
+  bucket = aws_s3_bucket.backend[0].id
   rule {
     id     = "backend-rule"
     status = "Enabled"
@@ -110,8 +110,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "backend" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "source" {
-    provider = aws.west
-    bucket = aws_s3_bucket.source[0].id
+  provider = aws.west
+  bucket   = aws_s3_bucket.source[0].id
   rule {
     id     = "backend-rule"
     status = "Enabled"
@@ -139,8 +139,8 @@ resource "aws_s3_bucket_public_access_block" "backend" {
 }
 
 resource "aws_s3_bucket_public_access_block" "source" {
-    provider = aws.west
-  bucket = aws_s3_bucket.source[0].id
+  provider = aws.west
+  bucket   = aws_s3_bucket.source[0].id
 
   block_public_acls       = true
   block_public_policy     = true
@@ -156,8 +156,8 @@ resource "aws_s3_bucket_logging" "backend" {
 }
 
 resource "aws_s3_bucket_logging" "source" {
-    provider = aws.west
-  bucket = aws_s3_bucket.source[0].id
+  provider = aws.west
+  bucket   = aws_s3_bucket.source[0].id
 
   target_bucket = aws_s3_bucket.source[0].id
   target_prefix = "log/"
@@ -202,8 +202,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backend" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
-    provider = aws.west
-  bucket = aws_s3_bucket.source[0].id
+  provider = aws.west
+  bucket   = aws_s3_bucket.source[0].id
 
   rule {
     apply_server_side_encryption_by_default {
@@ -215,14 +215,16 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 
 # Ensure S3 buckets should have event notifications enabled
 resource "aws_sqs_queue" "queue" {
-  name   = "s3-event-notification-queue"
-  policy = data.aws_iam_policy_document.queue.json
+  name              = "s3-event-notification-queue"
+  kms_master_key_id = aws_kms_key.mykey.arn
+  policy            = data.aws_iam_policy_document.queue.json
 }
 
 resource "aws_sqs_queue" "queue_source" {
-    provider = aws.west
-  name   = "s3-event-notification-queue"
-  policy = data.aws_iam_policy_document.queue.json
+  provider          = aws.west
+  name              = "s3-event-notification-queue"
+  kms_master_key_id = aws_kms_key.mykey.arn
+  policy            = data.aws_iam_policy_document.queue.json
 }
 
 resource "aws_s3_bucket_notification" "backend" {
@@ -236,8 +238,8 @@ resource "aws_s3_bucket_notification" "backend" {
 }
 
 resource "aws_s3_bucket_notification" "source" {
-    provider = aws.west
-  bucket = aws_s3_bucket.source[0].id
+  provider = aws.west
+  bucket   = aws_s3_bucket.source[0].id
 
   queue {
     queue_arn     = aws_sqs_queue.queue_source.arn
