@@ -5,3 +5,7 @@ output "backend-name" {
 output "source-name" {
   value = aws_s3_bucket.source[0].bucket
 }
+
+output "sqs_queue_url" {
+  value = aws_sqs_queue.queue.id
+}

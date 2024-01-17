@@ -92,6 +92,7 @@ resource "aws_s3_bucket_replication_configuration" "replication" {
 
 # Ensure that an S3 bucket has a lifecycle configuration
 resource "aws_s3_bucket_lifecycle_configuration" "backend" {
+    bucket = aws_s3_bucket.backend[0].id
   rule {
     id     = "backend-rule"
     status = "Enabled"
@@ -106,7 +107,25 @@ resource "aws_s3_bucket_lifecycle_configuration" "backend" {
     }
   }
 
-  bucket = aws_s3_bucket.backend[0].id
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "source" {
+    provider = aws.west
+    bucket = aws_s3_bucket.source[0].id
+  rule {
+    id     = "backend-rule"
+    status = "Enabled"
+
+    transition {
+      days          = 30
+      storage_class = "GLACIER"
+    }
+
+    expiration {
+      days = 365
+    }
+  }
+
 }
 
 # Ensure that S3 bucket has a Public Access block
@@ -119,10 +138,28 @@ resource "aws_s3_bucket_public_access_block" "backend" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_public_access_block" "source" {
+    provider = aws.west
+  bucket = aws_s3_bucket.source[0].id
+
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
 resource "aws_s3_bucket_logging" "backend" {
   bucket = aws_s3_bucket.backend[0].id
 
   target_bucket = aws_s3_bucket.backend[0].id
+  target_prefix = "log/"
+}
+
+resource "aws_s3_bucket_logging" "source" {
+    provider = aws.west
+  bucket = aws_s3_bucket.source[0].id
+
+  target_bucket = aws_s3_bucket.source[0].id
   target_prefix = "log/"
 }
 
@@ -144,50 +181,6 @@ resource "aws_kms_key" "mykey" {
 }
 
 #  "Ensure KMS key Policy is defined"
-data "aws_iam_policy_document" "kms_key_policy" {
-  statement {
-    sid       = "Allow administration of the key"
-    effect    = "Allow"
-    actions   = [
-      "kms:Create*",
-      "kms:Describe*",
-      "kms:Enable*",
-      "kms:List*",
-      "kms:Put*",
-      "kms:Update*",
-      "kms:Revoke*",
-      "kms:Disable*",
-      "kms:Get*",
-      "kms:Delete*",
-      "kms:ScheduleKeyDeletion",
-      "kms:CancelKeyDeletion",
-    ]
-    resources = ["*"]
-    principals {
-      type        = "AWS"
-      identifiers = [data.aws_caller_identity.current.account_id]
-    }
-  }
-
-  statement {
-    sid       = "Allow use of the key"
-    effect    = "Allow"
-    actions   = [
-      "kms:Encrypt",
-      "kms:Decrypt",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:DescribeKey",
-    ]
-    resources = ["*"]
-    principals {
-      type        = "AWS"
-      identifiers = [data.aws_caller_identity.current.account_id]
-    }
-  }
-}
-
-
 resource "aws_kms_key_policy" "mykey" {
   key_id = aws_kms_key.mykey.id
   policy = data.aws_iam_policy_document.kms_key_policy.json
@@ -209,6 +202,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "backend" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
+    provider = aws.west
   bucket = aws_s3_bucket.source[0].id
 
   rule {
@@ -220,26 +214,34 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "source" {
 }
 
 # Ensure S3 buckets should have event notifications enabled
+resource "aws_sqs_queue" "queue" {
+  name   = "s3-event-notification-queue"
+  policy = data.aws_iam_policy_document.queue.json
+}
+
+resource "aws_sqs_queue" "queue_source" {
+    provider = aws.west
+  name   = "s3-event-notification-queue"
+  policy = data.aws_iam_policy_document.queue.json
+}
+
 resource "aws_s3_bucket_notification" "backend" {
   bucket = aws_s3_bucket.backend[0].id
 
-  lambda_function {
-    lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function/YourLambdaFunction"
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "prefix/"
-    filter_suffix       = ".txt"
+  queue {
+    queue_arn     = aws_sqs_queue.queue.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_suffix = ".log"
   }
-
 }
 
 resource "aws_s3_bucket_notification" "source" {
+    provider = aws.west
   bucket = aws_s3_bucket.source[0].id
 
-  lambda_function {
-    lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function/YourLambdaFunction"
-    events              = ["s3:ObjectCreated:*"]
-    filter_prefix       = "prefix/"
-    filter_suffix       = ".txt"
+  queue {
+    queue_arn     = aws_sqs_queue.queue_source.arn
+    events        = ["s3:ObjectCreated:*"]
+    filter_suffix = ".log"
   }
-
 }
