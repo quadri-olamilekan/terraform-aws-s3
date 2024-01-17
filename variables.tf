@@ -1,3 +1,13 @@
+variable "backend_region" {
+  type    = string
+  default = "us-east-1"
+}
+
+variable "source_region" {
+  type    = string
+  default = "us-west-1"
+}
+
 variable "env" {
   type    = string
   default = "dev"
@@ -13,7 +23,3 @@ variable "create_vpc" {
   default = true
 }
 
-variable "backend_region" {
-  type    = string
-  default = "us-east-1"
-}
