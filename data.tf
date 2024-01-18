@@ -20,7 +20,7 @@ data "aws_iam_policy_document" "replication" {
       "s3:ListBucket",
     ]
 
-    resources = [aws_s3_bucket.source[0].arn]
+    resources = [aws_s3_bucket.source[0].arn, aws_s3_bucket.backend[0].arn]
   }
 
   statement {
@@ -32,7 +32,7 @@ data "aws_iam_policy_document" "replication" {
       "s3:GetObjectVersionTagging",
     ]
 
-    resources = ["${aws_s3_bucket.source[0].arn}/*"]
+    resources = ["${aws_s3_bucket.source[0].arn}/*", "${aws_s3_bucket.backend[0].arn}/*"]
   }
 
   statement {
@@ -44,7 +44,7 @@ data "aws_iam_policy_document" "replication" {
       "s3:ReplicateTags",
     ]
 
-    resources = ["${aws_s3_bucket.backend[0].arn}/*"]
+    resources = ["${aws_s3_bucket.source[0].arn}/*", "${aws_s3_bucket.backend[0].arn}/*"]
   }
 }
 
