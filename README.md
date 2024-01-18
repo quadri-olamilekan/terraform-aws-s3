@@ -23,7 +23,7 @@ Security scanning is graciously provided by Bridgecrew. Bridgecrew is the leadin
 | [![CIS EKS](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_eks_11)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+EKS+V1.1) | Center for Internet Security, EKS Compliance |
 | [![CIS DOCKER](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_docker_12)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+DOCKER+V1.2) | Center for Internet Security, DOCKER Compliance |
 | [![CIS GKE](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_gke_11)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+GKE+V1.1) | Center for Internet Security, GKE Compliance |
-| [![FEDRAMP (MODERATE)](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/fedramp_moderate)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=FEDRAMP+%28MODERATE%29) | FEDRAMP (MODERATE) |
+| [![FEDRAMP (MODERATE)](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/fedramp_moderate)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=FEDRAMP+%28MODERATE%29) | Federal Risk and Authorization Management Program(MODERATE) |
 
 ## Usage
 
