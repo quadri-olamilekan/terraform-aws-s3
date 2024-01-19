@@ -30,7 +30,7 @@ Security scanning is graciously provided by Bridgecrew. Bridgecrew is the leadin
 ```hcl
 module "s3-bucket" {
   source  = "quadri-olamilekan/s3-bucket/aws"
-  version = "1.0.0"
+  version = "1.0.1"
   # insert the required variables here
 }
 ```

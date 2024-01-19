@@ -12,7 +12,7 @@ resource "random_integer" "s3" {
   min = var.min_int
 
   keepers = {
-    bucket_env = var.env
+    bucket_name = var.bucket_name
   }
 }
 
@@ -37,7 +37,7 @@ resource "aws_iam_role_policy_attachment" "replication" {
 resource "aws_s3_bucket" "backend" {
   count = var.create_vpc ? 1 : 0
 
-  bucket = lower("s3-${var.env}-${random_integer.s3.result}-${var.backend_region}")
+  bucket = lower("s3-${var.bucket_name}-${random_integer.s3.result}-destination")
 
   tags = var.tag_backend
 }
@@ -45,7 +45,7 @@ resource "aws_s3_bucket" "backend" {
 resource "aws_s3_bucket" "backend_log" {
   count = var.create_vpc ? 1 : 0
 
-  bucket = lower("s3-${var.env}-${random_integer.s3.result}-${var.backend_region}-log")
+  bucket = lower("s3-${var.bucket_name}-${random_integer.s3.result}-destination-log")
 
   tags = var.tag_backend
 }
@@ -53,7 +53,7 @@ resource "aws_s3_bucket" "backend_log" {
 resource "aws_s3_bucket" "source" {
   count    = var.create_vpc ? 1 : 0
   provider = aws.source
-  bucket   = lower("s3-${var.env}-${random_integer.s3.result}-${var.source_region}")
+  bucket   = lower("s3-${var.bucket_name}-${random_integer.s3.result}-source")
 
   tags = var.tag_source
 }
@@ -61,7 +61,7 @@ resource "aws_s3_bucket" "source" {
 resource "aws_s3_bucket" "source_log" {
   count    = var.create_vpc ? 1 : 0
   provider = aws.source
-  bucket   = lower("s3-${var.env}-${random_integer.s3.result}-${var.source_region}-log")
+  bucket   = lower("s3-${var.bucket_name}-${random_integer.s3.result}-source-log")
 
   tags = var.tag_source
 }
