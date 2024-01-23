@@ -1,15 +1,14 @@
 variable "backend_region" {
-  type    = string
-  default = "us-west-1"
+  type = string
+
 }
 
 variable "source_region" {
-  type    = string
-  default = "us-east-1"
+  type = string
+
 }
 
 variable "bucket_name" {
-  type    = string
-  default = "dev"
+  type = string
 
 }
