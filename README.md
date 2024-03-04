@@ -4,27 +4,6 @@
 
 This Terraform configuration is designed to create a comprehensive AWS infrastructure to support secure and scalable handling of S3 events, including replication and encryption. Below is a detailed overview of the resources provisioned by this configuration.
 
-## Security & Compliance [<img src="https://cloudposse.com/wp-content/uploads/2020/11/bridgecrew.svg" width="250" align="right" />](https://bridgecrew.io/)
-
-Security scanning is graciously provided by Bridgecrew. Bridgecrew is the leading fully hosted, cloud-native solution providing continuous Terraform security and compliance.
-
-| Benchmark | Description |
-|--------|---------------|
-| [![Infrastructure Security](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/general)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=INFRASTRUCTURE+SECURITY) | Infrastructure Security Compliance |
-| [![CIS KUBERNETES](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_kubernetes_16)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+KUBERNETES+V1.6)| Center for Internet Security, KUBERNETES Compliance |
-| [![CIS AWS](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_aws)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+AWS+V1.2) | Center for Internet Security, AWS Compliance |
-| [![CIS AZURE](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_azure)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+AZURE+V1.1) | Center for Internet Security, AZURE Compliance |
-| [![PCI-DSS](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/pci_dss_v321)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=PCI-DSS+V3.2.1) | Payment Card Industry Data Security Standards Compliance |
-| [![NIST-800-53](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/nist)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=NIST-800-53) | National Institute of Standards and Technology Compliance |
-| [![ISO27001](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/iso)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=ISO27001) | Information Security Management System, ISO/IEC 27001 Compliance |
-| [![SOC2](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/soc2)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=SOC2)| Service Organization Control 2 Compliance |
-| [![CIS GCP](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_gcp)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+GCP+V1.1) | Center for Internet Security, GCP Compliance |
-| [![HIPAA](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/hipaa)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=HIPAA) | Health Insurance Portability and Accountability Compliance |
-| [![CIS EKS](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_eks_11)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+EKS+V1.1) | Center for Internet Security, EKS Compliance |
-| [![CIS DOCKER](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_docker_12)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+DOCKER+V1.2) | Center for Internet Security, DOCKER Compliance |
-| [![CIS GKE](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/cis_gke_11)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=CIS+GKE+V1.1) | Center for Internet Security, GKE Compliance |
-| [![FEDRAMP (MODERATE)](https://www.bridgecrew.cloud/badges/github/quadri-olamilekan/terraform-aws-s3-bucket/fedramp_moderate)](https://www.bridgecrew.cloud/link/badge?vcs=github&fullRepo=quadri-olamilekan%2Fterraform-aws-s3-bucket&benchmark=FEDRAMP+%28MODERATE%29) | Federal Risk and Authorization Management Program(MODERATE) |
-
 ## Usage
 
 ```hcl
